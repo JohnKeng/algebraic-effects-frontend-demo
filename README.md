@@ -87,7 +87,9 @@ performEffect('fetchData', (data) => {
 
 ### Strategy Pattern and Function Invocation (PART: effectHandlers)
 策略模式與函數調用( effectHandlers部分 )
-
+```js
+effectHandlers[effectName] = handler;
+```
 In the example provided, the implementation strategy involves storing functions in an object and invoking them via keys. This approach is a JavaScript incarnation of the Strategy Pattern, which provides several benefits:
 
 在所提供的範例實現中，我們採用了一種將函數儲存於物件中並透過鍵來調用它們的策略。這種做法是 JavaScript 中的策略模式（Strategy Pattern）的體現，它帶來了數個優勢：
