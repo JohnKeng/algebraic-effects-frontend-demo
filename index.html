@@ -1,114 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Algebraic Effects with Component-like UI Creation</title>
-<style>
-  /* 簡單的樣式 */
-  .post, .comment, .profile {
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  .profile {
-    background-color: #f0f0f0;
-  }
-  .error {
-    color: red;
-  }
-</style>
+    <meta charset="UTF-8">
+    <title>Algebraic Effects UI Demo</title>
+    <style>
+        /* Add your CSS styling here */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .error {
+            color: red;
+        }
+    </style>
 </head>
 <body>
+    <div id="app">
+        <div id="loadingState">Loading...</div>
+    </div>
+    <script>
+        // Mock data
+        const mockData = {
+            "posts": [
+                { "id": 1, "title": "json-server", "author": "typicode" }
+            ],
+            "comments": [
+                { "id": 1, "body": "some comment", "postId": 1 }
+            ],
+            "profile": { "name": "typicode" }
+        };
 
-<div id="app"></div>
+        // A registry for effect handlers
+        const effectHandlers = {};
 
-<script>
-    // 正確的模擬資料
-    const mockData = {
-    "posts": [
-        { "id": 1, "title": "json-server", "author": "typicode" }
-    ],
-    "comments": [
-        { "id": 1, "body": "some comment", "postId": 1 }
-    ],
-    "profile": { "name": "typicode" }
-    };
-
-    // 效應型別
-    const RENDER_COMPONENT = 'RENDER_COMPONENT';
-    const HANDLE_ERROR = 'HANDLE_ERROR';
-
-    // 建立效應
-    const createEffect = (type, payload) => ({ type, payload });
-
-    // 元件化UI構建
-    const componentBuilders = {
-    post: props => {
-        if (!props.title) throw new Error("Post is missing 'title' property");
-        if (!props.author) throw new Error("Post is missing 'author' property");
-        return `<div class="post"><h3>${props.title}</h3><p>Author: ${props.author}</p></div>`;
-    },
-    comment: props => {
-        if (!props.body) throw new Error("Comment is missing 'body' property");
-        if (typeof props.postId === 'undefined') throw new Error("Comment is missing 'postId' property");
-        return `<div class="comment"><p>${props.body}</p></div>`;
-    },
-    profile: props => {
-        if (!props.name) throw new Error("Profile is missing 'name' property");
-        return `<div class="profile"><h3>${props.name}</h3></div>`;
-    }
-    };
-
-    // 效應處理器對映
-    const effectHandlers = {
-    [RENDER_COMPONENT]: ({ componentType, props }) => {
-        const template = componentBuilders[componentType];
-        const element = document.createElement('div');
-        element.innerHTML = template(props);
-        document.getElementById('app').appendChild(element.firstElementChild);
-    },
-    [HANDLE_ERROR]: ({ message }) => {
-        const errorElement = document.createElement('div');
-        errorElement.className = 'error';
-        errorElement.textContent = message;
-        document.getElementById('app').appendChild(errorElement);
-    }
-    };
-
-    // 執行效應
-    const performEffect = effect => {
-    const handler = effectHandlers[effect.type];
-    if (handler) {
-        try {
-        handler(effect.payload);
-        } catch (error) {
-        // 捕捉到錯誤時建立錯誤效應
-        performEffect(createEffect(HANDLE_ERROR, { message: `An error occurred: ${error.message}` }));
+        // Define an effect handler
+        function defineEffect(effectName, handler) {
+            effectHandlers[effectName] = handler;
         }
-    } else {
-        console.warn(`No handler for effect type: ${effect.type}`);
-    }
-    };
 
-    // 初始化UI
-    const initUI = data => {
-    if (data.posts && data.posts.length > 0) {
-        data.posts.forEach(post => performEffect(createEffect(RENDER_COMPONENT, { componentType: 'post', props: post })));
-    }
-    if (data.comments && data.comments.length > 0) {
-        data.comments.forEach(comment => performEffect(createEffect(RENDER_COMPONENT, { componentType: 'comment', props: comment })));
-    }
-    if (data.profile) {
-        performEffect(createEffect(RENDER_COMPONENT, { componentType: 'profile', props: data.profile }));
-    }
-    };
+        // Perform an effect
+        function performEffect(effectName, ...args) {
+            if (!effectHandlers[effectName]) {
+                throw new Error(`Effect "${effectName}" is not defined.`);
+            }
+            return effectHandlers[effectName](...args);
+        }
 
-    // 啟動應用
-    initUI(mockData);
+        // Define your effect handlers here
+        defineEffect('fetchData', (callback) => {
+            setTimeout(() => callback(mockData), 100); // Simulate async data fetching
+        });
 
-</script>
+        defineEffect('render', (elementId, content) => {
+            const element = document.getElementById(elementId);
+            if (!element) {
+                performEffect('error', `Element with ID "${elementId}" not found.`);
+                return;
+            }
+            element.innerHTML = content; // Set the innerHTML to the content
+        });
 
+        defineEffect('error', (message) => {
+            const appElement = document.getElementById('loadingState');
+            appElement.innerHTML = `<div class="error">Error: ${message}</div>`; // Display error message
+        });
+
+        // Component builders
+        const componentBuilders = {
+            createPostItem(post) {
+                if (!post.title || !post.author) {
+                    throw new Error('Post title or author missing.');
+                }
+                return `<li>${post.title} by ${post.author}</li>`;
+            },
+            createCommentItem(comment) {
+                if (!comment.body || comment.postId === undefined) {
+                    throw new Error('Comment body or postId missing.');
+                }
+                return `<li>${comment.body} - Post ID: ${comment.postId}</li>`;
+            },
+            createProfile(profile) {
+                if (!profile.name) {
+                    throw new Error('Profile name missing.');
+                }
+                return `<h3>Profile</h3><p>Name: ${profile.name}</p>`;
+            }
+        };
+
+        // Window load handler
+        function windowLoaded() {
+            try {
+                // Perform effects here
+                performEffect('fetchData', (data) => {
+                    let contentHtml = '';
+
+                    try {
+                        const postsHtml = data.posts.map(componentBuilders.createPostItem).join('');
+                        const commentsHtml = data.comments.map(componentBuilders.createCommentItem).join('');
+                        const profileHtml = componentBuilders.createProfile(data.profile);
+
+                        // Accumulate all content
+                        contentHtml += `<h2>Posts</h2><ul>${postsHtml}</ul>`;
+                        contentHtml += `<h2>Comments</h2><ul>${commentsHtml}</ul>`;
+                        contentHtml += profileHtml;
+                    } catch (componentError) {
+                        performEffect('error', componentError.message);
+                        return;
+                    }
+
+                    // Render the accumulated content
+                    performEffect('render', 'app', contentHtml);
+                });
+            } catch (error) {
+                performEffect('error', error.message);
+            }
+        }
+
+        window.onload = windowLoaded;
+    </script>
 </body>
 </html>
