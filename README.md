@@ -87,7 +87,8 @@ performEffect('fetchData', (data) => {
 
 ### Strategy Pattern and Function Invocation (PART: effectHandlers)
 策略模式與函數調用( effectHandlers部分 )
-```js
+
+```javascript
 effectHandlers[effectName] = handler;
 ```
 In the example provided, the implementation strategy involves storing functions in an object and invoking them via keys. This approach is a JavaScript incarnation of the Strategy Pattern, which provides several benefits:
