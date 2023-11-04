@@ -1,10 +1,5 @@
 # Algebraic Effects in Frontend Demo / 前端代數效應演示
 
-This repository is a demonstration of how algebraic effects and effect handlers can be utilized for UI rendering in vanilla JavaScript.
-
-示例演示了如何在JavaScript中模擬代數效應和效果處理器（Algebraic Effects and Handlers）的概念，特別是在構建用戶界面（UI）時。
-
-
 ## Overview
 
 Algebraic effects are a programming construct used to represent side effects in a program. This demo provides a simple implementation to manage UI side effects using this concept.
@@ -120,6 +115,21 @@ This framework aims to demonstrate how side effects and error handling can be ma
 此框架旨在展示如何在 UI 應用中系統地管理副作用和錯誤處理，借鑑了代數效應的關鍵理念，以增強副作用管理中的清晰度和控制力。
 
 
+
+
+### Summarize 
+
+This example explores the "Algebraic Effect" - a concept derived from functional programming for elegantly managing and handling side effects. In traditional programming practice, side effects, such as network requests, reading and writing files, etc., are usually handled by writing asynchronous code or using callback functions. These operations often make code difficult to maintain and increase the risk of errors.
+
+這個示例要探討的是「Algebraic Effect」—— 一種源於函數式編程的概念，用於優雅地管理和處理副作用。在傳統的編程實踐中，副作用，比如網絡請求、讀寫文件等，通常是編寫異步代碼或是使用回調函數來處理。這些操作經常會使得代碼難以維護，並且增加了出錯的風險。
+
+Algebraic effects let us express these operations in a more declarative way, much like algebraic formulas are used to describe problems in mathematics. It allows us to separate the description of side effects from their specific implementation, improving the modularity and reusability of the code. In our framework example, we simulate this concept by creating an effectHandlers object. In this object, we can define various side effect processing functions and trigger these side effects through specific identifiers where needed instead of executing them directly.
+
+代數效應讓我們以一種更聲明式的方式來表達這些操作，就像是在數學中使用代數公式來描述問題一樣。它允許我們將副作用的描述與其具體實現分離，提高了代碼的模塊化和可重用性。在我們的框架示例中，我們通過建立一個effectHandlers對象來模擬這個概念。在這個對象里，我們可以定義各種副作用的處理函數，並且在需要的地方通過特定的標識來觸發這些副作用，而不是直接執行它們。
+
+The advantage of this approach is that it improves the readability and maintainability of the code, allowing us to handle complex operations in the program in a more intuitive and focused way. By practicing this simplified algebraic effects framework, we can better understand this concept and apply it to our daily programming, thereby writing clearer and more robust code.
+
+這種方法的優勢在於，它提高了代碼的可讀性和可維護性，使我們能夠以更直觀和集中的方式處理程序中的複雜操作。通過實踐這個簡化的代數效應框架，我們可以更好地理解這一概念，並且將其應用到我們的日常編程中去，從而寫出更清晰、更健壯的代碼。
 
 
 ### Contributions
